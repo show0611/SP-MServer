@@ -1,0 +1,16 @@
+# If the limit value is -1, there is no upper limit.
+# But, "HomeListup" limit can't set value -1.
+Limit:
+   InviteStack: 20
+   HomeListup: 10
+   HomeRegister: 30
+   MuteListup: 10
+
+Delay:
+   InviteDelay: 300
+   InviteRemoveDelay: 600
+
+Mute:
+   Players: []
+   ShowMuters: []
+   HideMuters: []

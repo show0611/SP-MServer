@@ -1,0 +1,110 @@
+name: SP-MServer
+version: ${project.version}
+main: com.github.show0611.showPlugins.mserver.Main
+authors: [show0611]
+description: とある鯖用に作るPlugin
+
+commands:
+   showplugin:
+      aliases: ["sp"]
+      usage: "/<command> [args] [options]"
+      permission-message: "§cYou aren't this plugin developer!"
+
+   home:
+      aliases: ["h"]
+      usage: "/<command> [args] [HomeName]"
+      permission: "sp.mserver.home.tp"
+      permission-message: "§cYou don't have permission execute this command."
+
+   sethome:
+      aliases: ["sh"]
+      usage: "/<command> [HomeName]"
+      permission: "sp.mserver.home.set"
+      permission-message: "§cYou don't have permission execute this command."
+
+   deletehome:
+      aliases: ["dh", "dhome", "delh", "delhome"]
+      usage: "/<command> [HomeName | #all]"
+      permission: "sp.mserver.home.delete"
+      permission-message: "§cYou don't have permission execute this command."
+
+   listhome:
+      aliases: ["lh", "lsh", "lshome", "lhome"]
+      usage: "/<command>"
+      permission: "sp.mserver.home.list"
+      permission-message: "§cYou don't have permission execute this command."
+
+   showplayerdata:
+      aliases: ["spd", "spdata", "splayerdata", "showpd"]
+      usage: "/<command> [player]"
+      permission: "sp.mserver.showplayerdata"
+      permission-message: "§cYou don't have permission execute this command."
+
+   mute:
+      aliases: ["m"]
+      usage: "/<command> <player>"
+      permission: "sp.mserver.mute.mute"
+      permission-message: "§cYou don't have permission execute this command."
+
+   unmute:
+      aliases: ["um"]
+      usage: "/<command> <player>"
+      permission: "sp.mserver.mute.unmute"
+      permission-message: "§cYou don't have permission execute this command."
+
+   mutedshow:
+      aliases: ["ms"]
+      usage: "/<command> [true, false]"
+      permission: "sp.mserver.mute.show"
+      permission-message: "§cYou don't have permission execute this command."
+
+   listmute:
+      aliases: ["lm", "lsm", "lsmute"]
+      usage: "/<command> [page]"
+      permission: "sp.mserver.mute.list"
+      permission-message: "§cYou don't have permission execute this command."
+
+   adminchat:
+      aliases: ["ac", "adc"]
+      usage: "/<command> <message>"
+      permission: "sp.mserver.adminchat"
+      permission-message: "§cYou don't have permission execute this command."
+
+   operatorchat:
+      aliases: ["oc", "opc"]
+      usage: "/<command> <message>"
+      permission: "sp.mserver.operatorchat"
+      permission-message: "§cYou don't have permission execute this command."
+
+
+permissions:
+   sp.mserver.*:
+      description: "If this permission is given, execution of command of this plugin is allowed."
+      default: op
+      children:
+         sp.mserver.home.*: true
+         sp.mserver.mute.*: true
+         sp.mserver.showplayerdata: true
+         sp.mserver.adminchat: true
+
+   sp.mserver.home.*:
+      description: "If this permission is given, execution of [home] and [sethome] command is allowed."
+      default: true
+      children:
+         sp.mserver.home.tp: true
+         sp.mserver.home.set: true
+         sp.mserver.home.list: true
+         sp.mserver.home.delete: true
+
+   sp.mserver.mute.*:
+      description: "If this permission is given, execution of mute command is allowed."
+      default: op
+      children:
+         sp.mserver.mute.mute: true
+         sp.mserver.mute.unmute: true
+         sp.mserver.mute.show: true
+         sp.mserver.mute.list: true
+
+   sp.mserver.operatorchat:
+      description: "If this permission is given, execution of oc command is allowed."
+      default: op
