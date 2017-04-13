@@ -1,6 +1,7 @@
 package com.github.show0611.showPlugins.mserver.utilities
 
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -45,6 +46,10 @@ object Utils {
         for (p in Bukkit.getOnlinePlayers())
             if (p.uniqueId.toString() == uuid) return p
         return null
+    }
+
+    fun tacc(ch: Char, str: String): String {
+        return ChatColor.translateAlternateColorCodes(ch, str)
     }
 
     fun encrypt(str: String): String {

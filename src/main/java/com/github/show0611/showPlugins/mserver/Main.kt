@@ -44,7 +44,7 @@ class Main : JavaPlugin() {
                     "BedLocation text, DefaultHome text, " +
                     "BanDate text, BanLocation text, BanReason text, PardonDate text);")
 
-            item.execute("create table if not exists ChestLinker(ID integer primary key, Location text);")
+            item.execute("create table if not exists Cursor(ID integer primary key, Location text);")
 
             val rs = pd.executeQuery("select * from PlayerData;")
             loadPD(pdm, rs)

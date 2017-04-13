@@ -21,7 +21,7 @@ class ListenerMute : Listener {
             for (str in SPMSData.PermPlayers) {
                 val pp = Utils.getOnlinePlayer(str) ?: continue
 
-                pp.sendMessage("§2[§3MuterChat§2] §r" + p.name + ": " + event.message)
+                pp.sendMessage("§2[§3MuterChat§2] §r${p.name}: ${event.message}")
             }
             event.isCancelled = true
             break

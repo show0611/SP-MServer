@@ -13,9 +13,9 @@ class CommandMute : CommandExecutor {
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
         when (cmd.name.toLowerCase()) {
             "mute" -> {
-                if (args.size == 0) return false
+                if (args.isEmpty()) return false
 
-                val p = Utils.getOnlinePlayer(args[0].substring(1))
+                val p = if (args[0].startsWith("!")) Utils.getOnlinePlayer(args[0].substring(1)) else Utils.getOnlinePlayer(args[0])
                 if (p == null) {
                     sender.sendMessage("§2[§3ShowPlugin§2] §c" + args[0] + " はオフライン、もしくは存在しません！")
                     return true
@@ -34,7 +34,7 @@ class CommandMute : CommandExecutor {
             }
 
             "unmute" -> {
-                if (args.size == 0) return false
+                if (args.isEmpty()) return false
 
                 var flag = 0
                 var p1 = Utils.getOnlinePlayer(args[0])
@@ -70,7 +70,7 @@ class CommandMute : CommandExecutor {
 
 
             "mutedshow" -> {
-                if (args.size == 0) return false
+                if (args.isEmpty()) return false
 
                 if (args[0] == "true") {
                     SPMSData.PermPlayers.add(sender.name)
@@ -94,10 +94,10 @@ class CommandMute : CommandExecutor {
                 val limit = SPMSData.conf.getInt("Limit.MuteListup")
                 var count = 0
                 var page = 0
-                if (args.size != 0) page = Integer.parseInt(args[0])
+                if (args.isNotEmpty()) page = Integer.parseInt(args[0])
 
                 for (i in list.indices) {
-                    if (args.size != 0) {
+                    if (args.isEmpty()) {
                         if (count == 0) sender.sendMessage("---------- §2[§3Mute List: page $page§2] §r----------")
 
                         if (limit * (page - 1) > i) {

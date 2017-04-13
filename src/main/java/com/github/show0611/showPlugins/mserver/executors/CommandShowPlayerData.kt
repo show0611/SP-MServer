@@ -18,10 +18,9 @@ class CommandShowPlayerData : CommandExecutor {
 
         when (cmd.name.toLowerCase()) {
             "showplayerdata" -> {
-                if (args.size != 0) {
+                if (args.isNotEmpty()) {
                     p.sendMessage("----- §2[§3" + args[0] + "'s Data§2] §r-----")
-                    var cp = Utils.getOnlinePlayer(args[0]) as CraftPlayer
-                    if (cp == null) cp = Utils.getOfflinePlayer(args[0]) as CraftPlayer
+                    val cp = if (Utils.getOnlinePlayer(args[0]) == null) Utils.getOfflinePlayer(args[0]) as CraftPlayer else Utils.getOnlinePlayer(args[0]) as CraftPlayer
                     if (cp.isBanned)
                         map = SPMSData.BannedPlayers[cp.uniqueId.toString()]!!
                     else
