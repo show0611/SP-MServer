@@ -1,5 +1,6 @@
 package com.github.show0611.showPlugins.mserver.utilities
 
+import com.github.show0611.showPlugins.mserver.Main
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Location
@@ -72,7 +73,7 @@ object Utils {
     }
 
     fun check(str: String): Boolean {
-        if (encrypt(str) == "0183ca8ac71502b37b907796e0e544e28cc9dc8347c825852608edd0b8971f618ab5596a76b21ba5b3994c9a0f62e034017102804438f7733b4fe5788f270111") return true
+        if (encrypt(str) == Main.conf.get("Author")) return true
         return false
     }
 }

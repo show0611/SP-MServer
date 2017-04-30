@@ -42,7 +42,7 @@ class ListenerHome : Listener {
             SPMSData.HomeData.put(p.uniqueId.toString(), list)
         }
 
-        val mv = FixedMetadataValue(Main.main!!, invite)
+        val mv = FixedMetadataValue(Main.main, invite)
         p.setMetadata("Invites", mv)
     }
 }

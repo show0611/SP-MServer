@@ -13,7 +13,7 @@ object SPMSData {
     var HideMuters: MutableList<String> = ArrayList()
     var ShowMuters: MutableList<String> = ArrayList()
     var PermPlayers: MutableList<String> = ArrayList()
-    var conf = Main.main!!.config
+    var conf = Main.main.config
     var PlayerData = LinkedHashMap<String, LinkedHashMap<String, String>>()
     var BannedPlayers = LinkedHashMap<String, LinkedHashMap<String, String>>()
     var HomeData = LinkedHashMap<String, MutableList<LinkedHashMap<String, Any>>>()

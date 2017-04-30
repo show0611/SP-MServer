@@ -17,6 +17,7 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import java.sql.SQLException
 import java.util.*
+import kotlin.properties.Delegates
 
 /**
  * Created by show0611 on 2017/01/28.
@@ -32,7 +33,7 @@ class CommandHome : CommandExecutor {
         val p = sender as Player
         val scheduler = Main.main.server.scheduler
         val map = LinkedHashMap<String, Any>()
-        val list = SPMSData.HomeData[p.uniqueId.toString()]
+        val list = SPMSData.HomeData["${p.uniqueId}"]
         val invite: MutableList<LinkedHashMap<String, Any>>
 
         when (cmd.name.toLowerCase()) {
@@ -41,36 +42,37 @@ class CommandHome : CommandExecutor {
                     when (args[0]) {
                         "#invite" -> {
                             val pl = Utils.getOnlinePlayer(args[1])
-                            var loc: Location? = null
+                            var loc: Location by Delegates.notNull()
                             invite = p.getMetadata("Invites")[0].value() as MutableList<LinkedHashMap<String, Any>>
                             val id = invite.size + 1
                             if (pl == null) return false
 
                             for (str in ipl) {
                                 if (str == p.uniqueId.toString()) {
-                                    p.sendMessage("§2[§3ShowPlugin§2] 前回の招待から" + delay + "秒後に招待を送ってください。")
+                                    p.sendMessage("§2[§3ShowPlugin§2] 前回の招待から${delay}秒後に招待を送ってください。")
                                     return true
                                 }
                             }
                             val limit = SPMSData.conf.getInt("Limit.InviteStack")
-                            if (limit != -1 && invite.size < limit) {
-                                p.sendMessage("§2[§3ShowPlugin§2] §c" + args[1] + "さんへの招待が上限数に達しているのでしばらく待ってからもう一度招待してください")
+                            if (limit != -1 && invite.size >= limit) {
+                                p.sendMessage("§2[§3ShowPlugin§2] §c${args[1]}さんへの招待が上限数に達しているのでしばらく待ってからもう一度招待してください")
                                 return true
                             }
 
                             val pre = TextComponent("§2[§3ShowPlugin§2] §r")
-                            val base = TextComponent(p.name + "さんからHomeへの招待が来ています")
+                            val base = TextComponent("${p.name}さんからHomeへの招待が来ています")
                             val tc = TextComponent("§2[§3ShowPlugin§2] §3許可するならこのチャットをクリック")
                             base.color = ChatColor.GREEN
-                            tc.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/home #accept " + id)
+                            tc.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/home #accept $id")
                             pre.addExtra(base)
 
                             p.spigot().sendMessage(pre)
                             p.spigot().sendMessage(tc)
 
-                            for (m in SPMSData.HomeData[p.uniqueId.toString()]!!) {
-                                if (m.get("Name") == args[1]) {
-                                    loc = Utils.toLocation(m.get("Location").toString())
+                            for (m in SPMSData.HomeData["${p.uniqueId}"]!!) {
+                                if (m["Name"] == args[1]) {
+                                    loc = Utils.toLocation(m["Location"].toString())!!
+                                    println(loc)
                                     break
                                 }
                             }
@@ -78,7 +80,7 @@ class CommandHome : CommandExecutor {
                             counter.put(p.uniqueId.toString(), delay)
                             map.put("ID", id)
                             map.put("Name", p.name)
-                            map.put("Location", loc!!)
+                            map.put("Location", loc)
                             invite.add(map.clone() as LinkedHashMap<String, Any>)
                             ipl.add(p.uniqueId.toString())
                             map.clear()
@@ -87,7 +89,7 @@ class CommandHome : CommandExecutor {
                                 override fun run() {
                                     for (m in invite) {
                                         if (m["ID"] == id) {
-                                            pl.sendMessage("§2[§3ShowPlugin§2] §r" + m["Name"] + "さんからの招待が削除されました")
+                                            pl.sendMessage("§2[§3ShowPlugin§2] §r${m["Name"]}さんからの招待が削除されました")
                                             invite.remove(m)
                                         }
                                     }
@@ -119,9 +121,9 @@ class CommandHome : CommandExecutor {
                         }
 
                         else -> {
-                            for (m in SPMSData.HomeData[p.uniqueId.toString()]!!) {
-                                if (m.get("Name") == args[0]) {
-                                    p.teleport(Utils.toLocation(m.get("Location").toString()))
+                            for (m in SPMSData.HomeData["${p.uniqueId}"]!!) {
+                                if (m["Name"] == args[0]) {
+                                    p.teleport(Utils.toLocation(m["Location"].toString()))
                                     return true
                                 }
                             }
@@ -137,84 +139,6 @@ class CommandHome : CommandExecutor {
 
                     return true
                 }
-                if (args.isNotEmpty()) {
-                    when (args[0]) {
-                        "#accept" -> {
-                            try {
-                                if (args[1].equals(p.uniqueId.toString())) {
-                                    pd.execute("update PlayerData set DefaultHome='" + p.location.toString() + "' where UUID='" + p.uniqueId.toString() + "';")
-                                    SPMSData.PlayerData[p.uniqueId.toString()]!!.replace("DefaultHome", p.location.toString())
-                                    return true
-                                } else {
-                                    sql.execute("update '" + p.uniqueId.toString() +
-                                            "' set Location='" + p.location.toString() + "' where Name='" + args[1] + "';")
-                                    for (m in SPMSData.HomeData[p.uniqueId.toString()]!!) {
-                                        for (entry in m.entries) {
-                                            if (entry.key == args[1]) {
-                                                m.replace(args[1], p.location.toString())
-                                                return true
-                                            }
-                                        }
-                                    }
-                                }
-                            } catch (e: SQLException) {
-                                e.printStackTrace()
-                            }
-
-                            return false
-                        }
-
-                        else -> {
-                            val limit = SPMSData.conf.getInt("Limit.HomeRegister")
-                            if (limit != -1 && list!!.size < limit) {
-                                p.sendMessage("§2[§3ShowPlugin§2] §cHomeの設定数が上限に達しているので登録出来ませんでした")
-                                return true
-                            }
-                            try {
-                                sql.execute("insert into " + p.uniqueId.toString() + "(Name, Location) values('" + args[0] + "', '" + p.location.toString() + "');")
-
-                                map.put("ID", list!!.size + 1)
-                                map.put("Name", args[0])
-                                map.put("Location", p.location.toString())
-                                list.add(map.clone() as LinkedHashMap<String, Any>)
-                                map.clear()
-                            } catch (e: SQLException) {
-                                val base = TextComponent("§2[§3ShowPlugin§2] §3上書きする場合はこのチャットをクリック")
-
-                                base.color = ChatColor.GREEN
-                                base.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sethome #accept " + p.uniqueId.toString())
-                                p.spigot().sendMessage(base)
-                            }
-
-                            return true
-                        }
-                    }
-                } else {
-                    try {
-                        val rs = pd.executeQuery("select DefaultHome from PlayerData where UUID='" + p.uniqueId.toString() + "';")
-                        rs.next()
-                        if (rs.getString(1) == "null") {
-                            pd.execute("update PlayerData set DefaultHome='" + p.location.toString() + "' where UUID='" + p.uniqueId.toString() + "';")
-                            SPMSData.PlayerData[p.uniqueId.toString()]!!.replace("DefaultHome", p.location.toString())
-                        } else {
-                            throw MServerException("column DefaultHome is not null. Overwrite it?")
-                        }
-                    } catch (e: SQLException) {
-                        e.printStackTrace()
-
-                    } catch (e: MServerException) {
-                        val base = TextComponent("§2[§3ShowPlugin§2] §3上書きする場合はこのチャットをクリック")
-
-                        base.color = ChatColor.GREEN
-                        base.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sethome #accept pd")
-                        p.spigot().sendMessage(base)
-                    }
-
-                }
-                return true
-            }
-
-            "sethome" -> {
                 if (args.isNotEmpty()) {
                     when (args[0]) {
                         "#accept" -> {
@@ -240,14 +164,89 @@ class CommandHome : CommandExecutor {
 
                             return false
                         }
+
                         else -> {
                             val limit = SPMSData.conf.getInt("Limit.HomeRegister")
-                            if (limit != -1 && list!!.size < limit) {
+                            if (limit != -1 && list!!.size >= limit) {
                                 p.sendMessage("§2[§3ShowPlugin§2] §cHomeの設定数が上限に達しているので登録出来ませんでした")
                                 return true
                             }
                             try {
                                 sql.execute("insert into ${p.uniqueId}(Name, Location) values('${args[0]}', '${p.location}');")
+
+                                map.put("ID", list!!.size + 1)
+                                map.put("Name", args[0])
+                                map.put("Location", p.location.toString())
+                                list.add(map.clone() as LinkedHashMap<String, Any>)
+                                map.clear()
+                            } catch (e: SQLException) {
+                                val base = TextComponent("§2[§3ShowPlugin§2] §3上書きする場合はこのチャットをクリック")
+
+                                base.color = ChatColor.GREEN
+                                base.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sethome #accept ${p.uniqueId}")
+                                p.spigot().sendMessage(base)
+                            }
+
+                            return true
+                        }
+                    }
+                } else {
+                    try {
+                        val rs = pd.executeQuery("select DefaultHome from PlayerData where UUID='${p.uniqueId}';")
+                        rs.next()
+                        if (rs.getString(1) == "null") {
+                            pd.execute("update PlayerData set DefaultHome='${p.location}' where UUID='${p.uniqueId}';")
+                            SPMSData.PlayerData[p.uniqueId.toString()]!!.replace("DefaultHome", p.location.toString())
+                        } else {
+                            throw MServerException("column DefaultHome is not null. Overwrite it?")
+                        }
+                    } catch (e: SQLException) {
+                        e.printStackTrace()
+
+                    } catch (e: MServerException) {
+                        val base = TextComponent("§2[§3ShowPlugin§2] §3上書きする場合はこのチャットをクリック")
+
+                        base.color = ChatColor.GREEN
+                        base.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sethome #accept pd")
+                        p.spigot().sendMessage(base)
+                    }
+
+                }
+                return true
+            }
+
+            "sethome" -> {
+                if (args.isNotEmpty()) {
+                    when (args[0]) {
+                        "#accept" -> {
+                            try {
+                                if (args[1] == p.uniqueId.toString()) {
+                                    pd.execute("update PlayerData set DefaultHome='${p.location}' where UUID='${p.uniqueId}';")
+                                    SPMSData.PlayerData["${p.uniqueId}"]!!.replace("DefaultHome", p.location.toString())
+                                    return true
+                                } else {
+                                    sql.execute("update '${p.uniqueId}' set Location='${p.location}' where Name='${args[1]}';")
+                                    for (m in SPMSData.HomeData["${p.uniqueId}"]!!) {
+                                        if (m["Name"] == args[1]) {
+                                            m.replace("Location", p.location.toString())
+                                            return true
+                                        }
+                                    }
+                                }
+                            } catch (e: SQLException) {
+                                e.printStackTrace()
+                            }
+
+                            return false
+                        }
+                        else -> {
+                            val limit = SPMSData.conf.getInt("Limit.HomeRegister")
+                            if (limit != -1 && list!!.size >= limit) {
+                                p.sendMessage("§2[§3ShowPlugin§2] §cHomeの設定数が上限に達しているので登録出来ませんでした")
+                                return true
+                            }
+                            try {
+                                sql.execute("insert into '${p.uniqueId}'(Name, Location) values('${args[0]}', '${p.location}');")
                                 map.put("ID", list!!.size + 1)
                                 map.put("Name", args[0])
                                 map.put("Location", p.location.toString())
@@ -265,9 +264,7 @@ class CommandHome : CommandExecutor {
                     }
                 } else {
                     try {
-                        val rs = pd.executeQuery("select DefaultHome from PlayerData where UUID='${p.uniqueId}';")
-                        rs.next()
-                        if (rs.getString(1).equals("null")) {
+                        if (SPMSData.PlayerData["${p.uniqueId}"]!!["DefaultHome"].equals("null")) {
                             pd.execute("update PlayerData set DefaultHome='${p.location}' where UUID='${p.uniqueId}';")
                             SPMSData.PlayerData[p.uniqueId.toString()]!!.replace("DefaultHome", p.location.toString())
                         } else {
@@ -291,17 +288,17 @@ class CommandHome : CommandExecutor {
                     when (args[0]) {
                         "#all" -> {
                             try {
-                                sql.execute("delete from " + p.uniqueId.toString() + ";")
-                                SPMSData.HomeData[p.uniqueId.toString()]!!.clear()
+                                sql.execute("delete from '${p.uniqueId}';")
+                                SPMSData.HomeData["${p.uniqueId}"]!!.clear()
                                 return true
                             } catch (e: SQLException) {
                                 return false
                             }
 
                             try {
-                                sql.execute("delete from " + p.uniqueId.toString() + " where Name='" + args[0] + "';")
+                                sql.execute("delete from '${p.uniqueId}' where Name='${args[0]}';")
                                 for (m in list!!) {
-                                    if (m.get("Name")!!.equals(args[0])) list.remove(m)
+                                    if (m["Name"]!! == args[0]) list.remove(m)
                                 }
                                 return true
                             } catch (e: SQLException) {
@@ -312,7 +309,7 @@ class CommandHome : CommandExecutor {
 
 
                         else -> try {
-                            sql.execute("delete from " + p.uniqueId.toString() + " where Name='" + args[0] + "';")
+                            sql.execute("delete from '" + p.uniqueId.toString() + "' where Name='" + args[0] + "';")
                             for (m in list!!) {
                                 if (m.get("Name")!!.equals(args[0])) list.remove(m)
                             }

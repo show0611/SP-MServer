@@ -11,8 +11,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent
  * Created by show0611 on 2017/02/03.
  */
 class ListenerAdminChat : Listener {
-    @EventHandler
-    fun adminChat(event: PlayerCommandPreprocessEvent) {
+    @EventHandler fun adminChat(event: PlayerCommandPreprocessEvent) {
         val p = event.player
         var msg = event.message
         val splt = msg.split(" ")

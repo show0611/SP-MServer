@@ -1,5 +1,6 @@
 # If the limit value is -1, there is no upper limit.
 # But, "HomeListup" limit can't set value -1.
+Author: "0183ca8ac71502b37b907796e0e544e28cc9dc8347c825852608edd0b8971f618ab5596a76b21ba5b3994c9a0f62e034017102804438f7733b4fe5788f270111"
 Limit:
    InviteStack: 20
    HomeListup: 10

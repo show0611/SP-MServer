@@ -1,12 +1,11 @@
 package com.github.show0611.showPlugins.mserver
 
-import com.github.show0611.showPlugins.mserver.executors.CommandAdminChat
-import com.github.show0611.showPlugins.mserver.executors.CommandHome
-import com.github.show0611.showPlugins.mserver.executors.CommandMute
-import com.github.show0611.showPlugins.mserver.executors.CommandShowPlayerData
+import com.github.show0611.showPlugins.mserver.executors.*
 import com.github.show0611.showPlugins.mserver.listeners.*
 import com.github.show0611.showPlugins.mserver.utilities.SPMSData
 import com.github.show0611.showPlugins.mserver.utilities.SQLite
+import org.bukkit.configuration.file.FileConfiguration
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginManager
 import org.bukkit.plugin.java.JavaPlugin
@@ -26,6 +25,7 @@ class Main : JavaPlugin() {
         this.saveDefaultConfig()
         main = this
         pm = server.pluginManager
+        conf = config
 
         try {
             home.open("jdbc:sqlite:/" + this.dataFolder.absolutePath + "/Home.sqlite")
@@ -88,12 +88,14 @@ class Main : JavaPlugin() {
         this.getCommand("mutedshow").executor = CommandMute()
         this.getCommand("adminchat").executor = CommandAdminChat()
         this.getCommand("operatorchat").executor = CommandAdminChat()
+        this.getCommand("administrator").executor = CommandAdmin()
 
         pm.registerEvents(ListenerHome(), this)
         pm.registerEvents(ListenerPlayerData(), this)
         pm.registerEvents(ListenerMute(), this)
         pm.registerEvents(ListenerBook(), this)
         pm.registerEvents(ListenerAdminChat(), this)
+        pm.registerEvents(ListenerItems(), this)
     }
 
     override fun onDisable() {
@@ -106,6 +108,7 @@ class Main : JavaPlugin() {
     companion object {
         var main: Plugin by Delegates.notNull()
         var pm: PluginManager by Delegates.notNull()
+        var conf: FileConfiguration by Delegates.notNull()
         var home = SQLite()
         var pd = SQLite()
         var item = SQLite()
