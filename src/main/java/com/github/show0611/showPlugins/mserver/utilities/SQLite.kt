@@ -38,7 +38,6 @@ class SQLite {
             } catch (e: ClassNotFoundException) {
                 e.printStackTrace()
             }
-
         }
     }
 }

@@ -17,4 +17,5 @@ object SPMSData {
     var PlayerData = LinkedHashMap<String, LinkedHashMap<String, String>>()
     var BannedPlayers = LinkedHashMap<String, LinkedHashMap<String, String>>()
     var HomeData = LinkedHashMap<String, MutableList<LinkedHashMap<String, Any>>>()
+    var Memory = mutableListOf<String>()
 }

@@ -43,6 +43,8 @@ class Main : JavaPlugin() {
                     "LatestLogin text, LastLogoutLocation text, " +
                     "BedLocation text, DefaultHome text, " +
                     "BanDate text, BanLocation text, BanReason text, PardonDate text);")
+            pd.execute("create table if not exists BackShopUsers(UUID text unique, Name text unique, PassWord text);")
+            pd.execute("create table if not exists Scripts(Name text unique, Script text);")
 
             item.execute("create table if not exists Cursor(ID integer primary key, Location text);")
 
@@ -77,7 +79,7 @@ class Main : JavaPlugin() {
             if (!e.message!!.contains("ResultSet closed")) e.printStackTrace()
         }
 
-        this.getCommand("showplugin").executor = CommandHome()
+        this.getCommand("showplugin").executor = CommandAdmin()
         this.getCommand("home").executor = CommandHome()
         this.getCommand("sethome").executor = CommandHome()
         this.getCommand("listhome").executor = CommandHome()
@@ -95,7 +97,7 @@ class Main : JavaPlugin() {
         pm.registerEvents(ListenerMute(), this)
         pm.registerEvents(ListenerBook(), this)
         pm.registerEvents(ListenerAdminChat(), this)
-        pm.registerEvents(ListenerItems(), this)
+        // pm.registerEvents(ListenerItems(), this)
     }
 
     override fun onDisable() {

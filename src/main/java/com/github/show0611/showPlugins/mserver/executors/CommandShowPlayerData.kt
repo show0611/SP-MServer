@@ -30,7 +30,7 @@ class CommandShowPlayerData : CommandExecutor {
                         p.sendMessage("§2[§3ShowPlugin§2] §cYou can't look " + args[0] + " data!")
                         return true
                     }
-                    val logloc = Utils.toLocation(map["LatestLogout"])
+                    val logloc = Utils.toLocation(map["LastLogoutLocation"])
 
                     p.sendMessage("§2[§3ShowPlugin§2] §bName§r: " + map["PlayerName"])
                     p.sendMessage("§2[§3ShowPlugin§2] §bUUID§r: " + map["UUID"])
@@ -39,15 +39,14 @@ class CommandShowPlayerData : CommandExecutor {
                     p.sendMessage("§2[§3ShowPlugin§2] §bFirstLogin§r: " + map["FirstLogin"])
                     p.sendMessage("§2[§3ShowPlugin§2] §bLastLogout§r: " + map["LastLogout"])
                     p.sendMessage("§2[§3ShowPlugin§2] §bLatestLogin§r: " + map["LatestLogin"])
-                    p.sendMessage("§2[§3ShowPlugin§2] §bLatestLogout§r: " + map["LatestLogout"])
                     if (logloc != null) {
-                        p.sendMessage("§2[§3ShowPlugin§2] §bLatestLogoutLocation§r:")
+                        p.sendMessage("§2[§3ShowPlugin§2] §bLastLogoutLocation§r:")
                         p.sendMessage("§2[§3ShowPlugin§2] §9World§r: " + logloc.world.name)
                         p.sendMessage("§2[§3ShowPlugin§2] §9X§r: " + logloc.blockX)
                         p.sendMessage("§2[§3ShowPlugin§2] §9Y§r: " + logloc.blockY)
                         p.sendMessage("§2[§3ShowPlugin§2] §9Z§r: " + logloc.blockZ)
                     } else
-                        p.sendMessage("§2[§3ShowPlugin§2] §bLatestLogoutLocation§r: null")
+                        p.sendMessage("§2[§3ShowPlugin§2] §bLastLogoutLocation§r: null")
 
                     if (p.isOp || Utils.check(p.uniqueId.toString())) {
                         val bed = Utils.toLocation(map["BedLocation"])
@@ -79,6 +78,7 @@ class CommandShowPlayerData : CommandExecutor {
                     println(map)
                     val bed = Utils.toLocation(map["BedLocation"])
                     val def = Utils.toLocation(map["DefaultHome"])
+                    val logloc = Utils.toLocation(map["LastLogoutLocation"])
                     p.sendMessage("§2[§3ShowPlugin§2] §bName§r: " + map["PlayerName"])
                     p.sendMessage("§2[§3ShowPlugin§2] §bUUID§r: " + map["UUID"])
                     p.sendMessage("§2[§3ShowPlugin§2] §bIP§r: " + map["GlobalIP"])
@@ -86,8 +86,15 @@ class CommandShowPlayerData : CommandExecutor {
                     p.sendMessage("§2[§3ShowPlugin§2] §bFirstLogin§r: " + map["FirstLogin"])
                     p.sendMessage("§2[§3ShowPlugin§2] §bLastLogout§r: " + map["LastLogout"])
                     p.sendMessage("§2[§3ShowPlugin§2] §bLatestLogin§r: " + map["LatestLogin"])
-                    p.sendMessage("§2[§3ShowPlugin§2] §bLatestLogout§r: " + map["LatestLogout"])
-                    p.sendMessage("§2[§3ShowPlugin§2] §bLatestLogoutLocation§r: " + map["LatestLogoutLocation"])
+                    p.sendMessage("§2[§3ShowPlugin§2] §bLastLogoutLocation§r: ")
+                    if (logloc != null) {
+                        p.sendMessage("§2[§3ShowPlugin§2] §bLastLogoutLocation§r:")
+                        p.sendMessage("§2[§3ShowPlugin§2] §9World§r: " + logloc.world.name)
+                        p.sendMessage("§2[§3ShowPlugin§2] §9X§r: " + logloc.blockX)
+                        p.sendMessage("§2[§3ShowPlugin§2] §9Y§r: " + logloc.blockY)
+                        p.sendMessage("§2[§3ShowPlugin§2] §9Z§r: " + logloc.blockZ)
+                    } else
+                        p.sendMessage("§2[§3ShowPlugin§2] §bLastLogoutLocation§r: null")
                     p.sendMessage("§2[§3ShowPlugin§2] §9OP§r: " + p.isOp)
                     p.sendMessage("§2[§3ShowPlugin§2] §9Banned§r: " + p.isBanned)
                     p.sendMessage("§2[§3ShowPlugin§2] §9AllowFlight§r: " + p.allowFlight)

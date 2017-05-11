@@ -17,6 +17,7 @@ object Utils {
         if (location == null) return null
         if (location == "null") return null
         val splt = location.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+
         return Location(
                 Bukkit.getWorld(splt[0].substring(31, splt[0].length - 1)),
                 java.lang.Double.valueOf(splt[1].substring(2)),
@@ -32,25 +33,39 @@ object Utils {
     }
 
     fun getOfflinePlayer(name: String): Player? {
-        for (p in Bukkit.getOnlinePlayers())
-            if (p.name == name) return p
-        return null
-    }
-
-    fun getOnlinePlayerByUUID(uuid: String): Player? {
-        for (p in Bukkit.getOnlinePlayers())
-            if (p.uniqueId.toString() == uuid) return p
-        return null
-    }
-
-    fun getOfflinePlayerByUUID(uuid: String): Player? {
-        for (p in Bukkit.getOnlinePlayers())
-            if (p.uniqueId.toString() == uuid) return p
+        for (p in Bukkit.getOfflinePlayers())
+            if (p.name == name) return p.player
         return null
     }
 
     fun tacc(ch: Char, str: String): String {
         return ChatColor.translateAlternateColorCodes(ch, str)
+    }
+
+    fun listup(limit: Int, page: Int, list: List<*>, prefix: String, suffix: String, listPrefix: String, listSuffix: String): String {
+        var str = ""
+        var count = 0
+
+        for (i in list.indices) {
+            if (count == 0) str += prefix + "\n"
+
+            if (limit * (page - 1) > i) {
+                count++
+                continue
+            }
+            str += listPrefix + list[i].toString() + listSuffix + "\n"
+
+            if (count == (limit - 1) * page + (page - 1) || count == list.size - 1) {
+                str += suffix + "\n"
+            }
+            count++
+        }
+
+        return str
+    }
+
+    fun listup(limit: Int, page: Int, list: List<*>, listPrefix: String): String {
+        return listup(limit, page, list, "", "", listPrefix, "")
     }
 
     fun encrypt(str: String): String {
@@ -73,7 +88,7 @@ object Utils {
     }
 
     fun check(str: String): Boolean {
-        if (encrypt(str) == Main.conf.get("Author")) return true
+        if (encrypt(str) == Main.conf.getString("Author")) return true
         return false
     }
 }

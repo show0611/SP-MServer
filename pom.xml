@@ -6,7 +6,7 @@
 
     <groupId>com.github.show0611.showPlugins</groupId>
     <artifactId>SP-MServer</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>SP-MServer</name>
